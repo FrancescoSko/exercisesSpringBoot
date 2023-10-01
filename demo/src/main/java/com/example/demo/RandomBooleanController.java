@@ -13,7 +13,7 @@ public class RandomBooleanController {
     @GetMapping("/random-boolean")
     public ResponseEntity<String> getRandomBooleanResponse() {
 
-        Boolean randomBoolean = new Random().nextBoolean();
+        boolean randomBoolean = new Random().nextBoolean();
 
         if (randomBoolean) {
             return ResponseEntity.ok("The boolean is true");
