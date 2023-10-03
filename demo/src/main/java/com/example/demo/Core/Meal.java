@@ -4,16 +4,16 @@ public class Meal {
     private Integer id;
     private String name;
     private String description;
-    private Integer price;
+    private Double price;
 
-    public Meal(Integer id, String name, String description, Integer price) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-    }
+//    public Meal(Integer id, String name, String description, Integer price) {
+//        this.id = id;
+//        this.name = name;
+//        this.description = description;
+//        this.price = price;
+//    }
 
-    public Meal(String name, String description, Integer price) {
+    public Meal(String name, String description, Double price) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -23,11 +23,11 @@ public class Meal {
         return id;
     }
 
-    public Integer getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(Integer price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
