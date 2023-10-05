@@ -1,137 +1,82 @@
 package com.example.demo.controllers;
 
-import com.example.demo.Core.Meal;
-import org.apache.coyote.Response;
+import com.example.demo.core.Meal;
+import com.example.demo.services.MealService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLOutput;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/esercizi-develhope")
 public class MealsController {
-    List<Meal> listOfMeals = new ArrayList<>();
 
-    //FUNZIONI DI GET
+    @Autowired
+    private final MealService service;
+
+    public MealsController(MealService service) {
+        this.service = service;
+    }
+
     @GetMapping("/meals")
-    public List<Meal> getListOfMeals() {
-        return listOfMeals;
+    public List<Meal> getAllMeals() {
+        return service.getAllMeals();
+    }
+
+    @PostMapping("/add-meals")
+    public Meal addMeal(@RequestBody Meal meal) {
+        return service.addMeal(meal);
     }
 
     @GetMapping("/meal/{name}")
-    public Meal getMealByName(@PathVariable String name) {
-        for (Meal meal : listOfMeals) {
-            if (meal.getName().equals(name)) {
-                return meal;
-            }
-        }
-        return null;
+    public Optional<Meal> getMealByName(@PathVariable String name) {
+        return service.getMealByName(name);
     }
 
-    @GetMapping("/meal/description-match/{phrase}")
-    public Meal getMealByDescriptionPhrase(@PathVariable String description) {
-        for (Meal meal : listOfMeals) {
-            if (meal.getDescription().equals(description)) {
-                return meal;
-            }
-        }
-        return null;
+    @GetMapping("/meal/description-match/{description}")
+    public Optional<Meal> getMealByDescriptionPhrase(@PathVariable String description) {
+        return service.getMealByDescriptionPhrase(description);
     }
+
 
     @GetMapping("/meal/price")
-    public List<Meal> getMealByPriceRange(@RequestParam Integer min, @RequestParam Integer max) {
-        List<Meal> mealsInThePriceRange = new ArrayList<>();
-
-        for (Meal meal : listOfMeals) {
-            if (meal.getPrice() > min && meal.getPrice() < max) {
-                mealsInThePriceRange.add(meal);
-            }
-        }
-        return mealsInThePriceRange;
-
-    }
-
-    //FUNZIONI DI POST E PUT
-    @PostMapping("/meal")
-    public ResponseEntity<String> putMeal(@RequestBody Meal meal) {
-        this.listOfMeals.add(meal);
-        return ResponseEntity.ok("Meal added");
+    public List<Meal> getMealByPriceRange(@RequestParam Double min, @RequestParam Double max) {
+        return service.getMealByPriceRange(min, max);
     }
 
 
     @PutMapping("/meal/{name}")
     public ResponseEntity<String> modifyMealName(@PathVariable String name, @RequestBody Meal updatedMeal) {
-
-        Meal mealToUpdate = listOfMeals.stream().filter(meal -> meal.getName().equals(name)).findAny().orElse(null);
-
-        if (mealToUpdate != null) {
-            mealToUpdate.setName(updatedMeal.getName());
-            return ResponseEntity.ok("Name of the meal updated");
-        }
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(service.modifyMealName(name, updatedMeal));
     }
 
 
     @PutMapping("/meal/{name}/price")
-    public ResponseEntity<String> modifyMealPriceByName(@PathVariable String name, @RequestBody Meal updatedMeal){
-        for(Meal meal : listOfMeals){
-            if (meal.getName().equals(name)){
-                meal.setPrice(updatedMeal.getPrice());
-                return ResponseEntity.ok("Meals price has been updated");
-            }
-        } return ResponseEntity.notFound().build();
+    public ResponseEntity<String> modifyMealPriceByName(@PathVariable String name, @RequestBody Meal updatedMeal) {
+        return ResponseEntity.ok(service.modifyMealPriceByName(name, updatedMeal));
     }
 
 
-
-
-  //FUNZIONI DI DELETE
-
-    @DeleteMapping("/delete-all-meals")
-    public ResponseEntity<String> deleteAllMeals() {
-        this.listOfMeals.clear();
-        return ResponseEntity.ok("All meals have been eliminated");
+    @DeleteMapping("/delete/all-meals")
+    public String deleteAllMeals() {
+        return service.deleteAllMeals();
     }
 
 
-    @DeleteMapping("delete/meal/name/{name}")
-    public ResponseEntity<String> deleteMealByName(@PathVariable String name) {
-
-        for (Meal meal : listOfMeals) {
-            if (!meal.getName().equals(name)) {
-                return ResponseEntity.badRequest().body("Impossible to delete, meal with this name does not exists");
-            }
-        }
-
-        Meal mealForDelete = listOfMeals.stream().filter(meal -> meal.getName().equals(name)).findAny().orElse(null);
-
-        listOfMeals.remove(mealForDelete);
-        return ResponseEntity.ok("The meal with this name " + name + " has been removed");
+    @DeleteMapping("/delete/meal/name/{name}")
+    public Optional<String> deleteMealByName(@PathVariable String name) {
+        return service.deleteMealByName(name);
     }
 
-    @DeleteMapping("delete/meal/price/{price}")
-    public ResponseEntity<String> deleteMealByPriceRange(@PathVariable Double price) {
-      List<Meal> mealsToDelete = new ArrayList<>();
-
-      for(Meal meal : listOfMeals){
-          if(meal.getPrice() <= price){
-              mealsToDelete.add(meal);
-          }
-      }
-
-       if(mealsToDelete.isEmpty()){
-           return  ResponseEntity.notFound().build();
-       }
-
-       listOfMeals.removeAll(mealsToDelete);
-       return ResponseEntity.ok("All meals with price above " + price + " have been eliminated");
+    @DeleteMapping("/delete/meal/price/{price}")
+    public Optional<String> deleteMealByPrice(@PathVariable Double price) {
+        return service.deleteMealByPrice(price);
     }
-
-
-
 }
+
+
 
 
 

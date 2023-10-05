@@ -1,4 +1,4 @@
-package com.example.demo.Core;
+package com.example.demo.core;
 
 public class Meal {
     private Integer id;
