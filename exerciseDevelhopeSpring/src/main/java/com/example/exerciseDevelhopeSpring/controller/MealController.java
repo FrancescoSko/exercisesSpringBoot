@@ -1,7 +1,10 @@
-package com.example.demo.controllers;
+package com.example.exerciseDevelhopeSpring.controller;
 
-import com.example.demo.core.Meal;
-import com.example.demo.services.MealService;
+
+
+
+import com.example.exerciseDevelhopeSpring.entity.Meal;
+import com.example.exerciseDevelhopeSpring.service.MealService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,14 +14,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/esercizi-develhope")
-public class MealsController {
+public class MealController {
 
     @Autowired
-    private final MealService service;
-
-    public MealsController(MealService service) {
-        this.service = service;
-    }
+    private MealService service;
 
     @GetMapping("/meals")
     public List<Meal> getAllMeals() {
@@ -31,13 +30,24 @@ public class MealsController {
     }
 
     @GetMapping("/meal/{name}")
-    public Optional<Meal> getMealByName(@PathVariable String name) {
-        return service.getMealByName(name);
+    public ResponseEntity<Meal> getMealByName(@PathVariable String name) {
+        Optional<Meal> opt = service.getMealByName(name);
+        if(opt.isPresent()){
+            return ResponseEntity.ok(opt.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/meal/description-match/{description}")
-    public Optional<Meal> getMealByDescriptionPhrase(@PathVariable String description) {
-        return service.getMealByDescriptionPhrase(description);
+    public ResponseEntity<Meal> getMealByDescriptionPhrase(@PathVariable String description) {
+        Optional<Meal> opt = service.getMealByDescriptionPhrase(description);
+
+        if(opt.isPresent()){
+            return ResponseEntity.ok(opt.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 
@@ -66,18 +76,24 @@ public class MealsController {
 
 
     @DeleteMapping("/delete/meal/name/{name}")
-    public Optional<String> deleteMealByName(@PathVariable String name) {
-        return service.deleteMealByName(name);
-    }
+    public ResponseEntity<String> deleteMealByName(@PathVariable String name) {
+       Optional<String> opt = service.deleteMealByName(name);
+        if(opt.isPresent()){
+            return ResponseEntity.ok("Meal: " + name + " has been eliminated");
+        } else{
+            return  ResponseEntity.notFound().build();
+        }
+     }
+
 
     @DeleteMapping("/delete/meal/price/{price}")
     public Optional<String> deleteMealByPrice(@PathVariable Double price) {
         return service.deleteMealByPrice(price);
     }
+
+
+
 }
-
-
-
 
 
 
